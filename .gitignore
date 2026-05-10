@@ -13,9 +13,10 @@ build/
 # Bun
 .bun/
 
-# Editor / OS
+# Editor / OS / tooling
 .vscode/
 .idea/
+.claude/
 .DS_Store
 Thumbs.db
 

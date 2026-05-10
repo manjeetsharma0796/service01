@@ -1,6 +1,6 @@
 # Minimal Bun-based Dockerfile for the MPP echo mock.
 # Render auto-detects this when runtime: docker is set in render.yaml.
-FROM oven/bun:1.2-alpine
+FROM oven/bun:1.3-alpine
 
 WORKDIR /app
 
