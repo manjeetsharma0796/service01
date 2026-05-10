@@ -92,6 +92,15 @@ const mppx = Mppx.create({
 
 const app = new Hono();
 
+// Honor Render/Cloudflare/proxy x-forwarded-proto so generated URLs use
+// https on production deployments instead of the internal http origin.
+function publicOrigin(c: { req: { url: string; header: (k: string) => string | undefined } }): string {
+  const url = new URL(c.req.url);
+  const proto = c.req.header("x-forwarded-proto");
+  const host = c.req.header("x-forwarded-host") ?? url.host;
+  return `${proto ?? url.protocol.replace(":", "")}://${host}`;
+}
+
 // Agent-friendly hint injected into every 402 body so misintegrating clients
 // see the correct wire format in the response they're already reading.
 // Reason this exists: the canonical failure mode is agents inventing headers
@@ -103,7 +112,7 @@ const enrich402: MiddlewareHandler = async (c, next) => {
     c.res.status === 402 &&
     c.res.headers.get("Content-Type")?.includes("application/problem+json")
   ) {
-    const origin = new URL(c.req.url).origin;
+    const origin = publicOrigin(c);
     const body = await c.res.clone().json() as Record<string, unknown>;
     const enriched = {
       ...body,
@@ -115,7 +124,7 @@ const enrich402: MiddlewareHandler = async (c, next) => {
         "The `challenge` MUST echo the full WWW-Authenticate challenge from this 402 (id, realm, " +
         "method, intent, request, expires, digest, opaque). The `signature` is a base58 Solana tx " +
         "signature for an on-chain transfer matching the offer in `request`. Do NOT use headers " +
-        "like X-Payment-Proof or X-Payment — only Authorization: Payment is read.",
+        "like X-Payment-Proof or X-Payment - only Authorization: Payment is read.",
     };
     const headers = new Headers(c.res.headers);
     c.res = new Response(JSON.stringify(enriched), {
@@ -132,7 +141,7 @@ app.get("/health", (c) => c.json({ ok: true, network: NETWORK, recipient: SOLANA
 // Agent-discoverable plain-text spec. Follows Jeremy Howard's llms.txt
 // convention (also used by mpp.dev itself at /services/llms.txt).
 app.get("/llms.txt", (c) => {
-  const origin = new URL(c.req.url).origin;
+  const origin = publicOrigin(c);
   const assetLabel = isSol ? "SOL" : "USDC";
   const human = isSol
     ? `${Number(amount) / 10 ** decimals} SOL`
