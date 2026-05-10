@@ -1,0 +1,31 @@
+{
+  "name": "klink-mpp-echo-mock",
+  "version": "0.1.0",
+  "description": "Research artifact — minimal MPP echo merchant advertising Solana mainnet + devnet payment methods. Built to validate the mppx + @solana/mpp server SDK and to be the first MPP-on-Solana service registered at mpp.dev / mppscan.com. NOT production Klink code.",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "bun run --hot src/server.ts",
+    "start": "bun run src/server.ts",
+    "build": "bun build src/server.ts --target=bun --outdir=dist",
+    "client": "bun run client/pay-echo.ts",
+    "setup:devnet": "bash scripts/devnet-setup.sh",
+    "setup:devnet:win": "pwsh scripts/devnet-setup.ps1",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@solana/mpp": "latest",
+    "@solana/web3.js": "^1.95",
+    "hono": "^4",
+    "mppx": "latest"
+  },
+  "devDependencies": {
+    "@types/node": "^22",
+    "bun-types": "^1.2",
+    "typescript": "^5"
+  },
+  "engines": {
+    "node": ">=22",
+    "bun": ">=1.2"
+  }
+}

@@ -1,0 +1,18 @@
+# Render blueprint for the MPP echo mock.
+# Connect this repo to Render, point it at this folder, and push to deploy.
+services:
+  - type: web
+    name: klink-mpp-echo-mock
+    runtime: docker
+    rootDir: docs/research-artifacts/mpp-mock-service
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: SOLANA_RECIPIENT
+        sync: false  # set in Render dashboard — your wallet pubkey
+      - key: MPP_SECRET_KEY
+        generateValue: true  # Render generates a stable 32-byte secret
+      - key: SOLANA_FEE_PAYER
+        sync: false  # optional; leave empty if clients cover gas
+      - key: ADVERTISE
+        value: "mainnet,devnet"
