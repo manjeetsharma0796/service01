@@ -5,6 +5,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "postinstall": "bun scripts/patch-mpp-inner-ixs.ts",
     "dev": "bun run --hot src/server.ts",
     "start": "bun run src/server.ts",
     "build": "bun build src/server.ts --target=bun --outdir=dist",
