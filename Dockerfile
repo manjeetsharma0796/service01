@@ -5,6 +5,9 @@ FROM oven/bun:1.3-alpine
 WORKDIR /app
 
 COPY package.json bun.lock* ./
+# Copy the postinstall script BEFORE running `bun install` — postinstall
+# fires during install and patches node_modules/@solana/mpp.
+COPY scripts ./scripts
 RUN bun install --frozen-lockfile || bun install
 
 COPY tsconfig.json ./
